@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder | Discover Your Perfect Meal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #ff6600;
+            color: white;
+            padding: 25px 0;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .image-container {
+            margin: 20px auto;
+            text-align: center;
+        }
+        .image-container img {
+            width: 60%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .search-container {
+            margin: 20px auto;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .search-container input {
+            flex-grow: 1;
+            padding: 12px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .filter-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            background: white;
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .filter-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 10px;
+        }
+        .filter-column h3 {
+            margin-bottom: 10px;
+            color: #008000;
+        }
+        .filter-column label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+    </style>
+</head>
+<body>
+    <header>Recipe Finder | Discover Your Perfect Meal</header>
+    
+    <div id="results" style="margin: 20px auto; max-width: 800px; text-align: left;"></div>
+
+    <div class="image-container">
+        <img src="/recifix/image.png" alt="Recipe Finder Banner">
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="ingredientInput" placeholder="Search for recipes by ingredient">
+    </div>
+    
+    <div class="filter-container">
+        <div class="filter-column">
+            <h3>Meal</h3>
+            <label><input type="checkbox"> Breakfast</label>
+            <label><input type="checkbox"> Lunch</label>
+            <label><input type="checkbox"> Dinner</label>
+            <label><input type="checkbox"> Snack/Side</label>
+            <label><input type="checkbox"> Dessert</label>
+        </div>
+        <div class="filter-column">
+            <h3>Special Diet</h3>
+            <label><input type="checkbox"> Vegetarian</label>
+            <label><input type="checkbox"> Egg-free</label>
+            <label><input type="checkbox"> Soy-free</label>
+            <label><input type="checkbox"> Nut-free</label>
+            <label><input type="checkbox"> Diabetes-friendly</label>
+            <label><input type="checkbox"> Dairy-free</label>
+        </div>
+        <div class="filter-column">
+            <h3>Recipe Type</h3>
+            <label><input type="checkbox"> Kid-friendly</label>
+            <label><input type="checkbox"> Crowd-friendly</label>
+            <label><input type="checkbox"> CACFP Approved</label>
+            <label><input type="checkbox"> No Cook</label>
+            <label><input type="checkbox"> Freezer-friendly</label>
+        </div>
+        <div class="filter-column">
+            <h3>Time</h3>
+            <label><input type="checkbox"> 45-Minute Meals</label>
+            <label><input type="checkbox"> 15-Minutes or less Meals</label>
+            <label><input type="checkbox"> 30-Minute Meals</label>
+        </div>
+    </div>
+    
+    <button onclick="filterRecipes()">Search Recipes</button>
+    
+    <script>
+    async function filterRecipes() {
+        const ingredient = document.getElementById("ingredientInput").value.trim();
+
+        if (!ingredient) {
+            alert("Please enter an ingredient!");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/recipes?ingredient=${ingredient}`);
+            const data = await response.json();
+
+            let resultDiv = document.getElementById("results");
+            resultDiv.innerHTML = "";
+
+            if (data.error) {
+                resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                return;
+            }
+
+            if (data.message) {
+                resultDiv.innerHTML = `<p>${data.message}</p>`;
+                return;
+            }
+
+            data.forEach(recipe => {
+                let recipeItem = document.createElement("div");
+                recipeItem.innerHTML = `<h3>${recipe.name}</h3>
+                                        <p>Ingredients: ${recipe.ingredients.join(", ")}</p>`;
+                recipeItem.style.border = "1px solid #ccc";
+                recipeItem.style.padding = "10px";
+                recipeItem.style.margin = "10px";
+                recipeItem.style.borderRadius = "5px";
+                recipeItem.style.backgroundColor = "white";
+                resultDiv.appendChild(recipeItem);
+            });
+
+        } catch (error) {
+            console.error("Error fetching recipes:", error);
+        }
+    }
+</script>
+
+    </script>
+</body>
+</html>
